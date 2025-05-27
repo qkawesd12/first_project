@@ -9,14 +9,12 @@ st.write("컴퓨터가 1부터 9까지 숫자 3개를 랜덤으로 선택합니�
 if 'target' not in st.session_state:
     st.session_state.target = random.sample(range(1, 10), 3)
     st.session_state.attempts = 0
-    st.session_state.max_attempts = 10  # 10번으로 변경
+    st.session_state.max_attempts = 10
     st.session_state.guessed = False
     st.session_state.history = []
 
-# 사용자 입력 받기
 user_input = st.text_input("1부터 9까지 숫자 3개를 공백으로 구분해서 입력하세요 (예: 1 5 9)")
 
-# 입력 파싱 함수
 def parse_input(text):
     try:
         nums = list(map(int, text.strip().split()))
@@ -42,6 +40,9 @@ if st.button("제출") and user_input and not st.session_state.guessed:
         st.session_state.history.append({"guess": guess, "strike": strike, "ball": ball})
 
         st.write(f"스트라이크: {strike}  볼: {ball}")
+        
+        remaining = st.session_state.max_attempts - st.session_state.attempts
+        st.write(f"남은 기회: {remaining}번")
 
         if strike == 3:
             st.success(f"축하합니다! {st.session_state.attempts}번 만에 맞히셨습니다! 🎉")
