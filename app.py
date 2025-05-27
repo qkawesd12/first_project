@@ -1,26 +1,67 @@
 import streamlit as st
 import random
 
-st.title("🎲 숫자 맞히기 게임")
+st.title("⚾ 간단한 야구 게임")
 
-# 초기 상태 설정
+st.write("컴퓨터가 1부터 9까지 숫자 3개를 랜덤으로 선택합니다. 당신은 3번 안에 숫자와 순서를 맞춰야 합니다.")
+
+# 상태 초기화
 if 'target' not in st.session_state:
-    st.session_state.target = random.randint(1, 100)
+    st.session_state.target = random.sample(range(1, 10), 3)
     st.session_state.attempts = 0
+    st.session_state.max_attempts = 3
+    st.session_state.guessed = False
+    st.session_state.history = []  # 입력 기록 저장
 
-st.write("1부터 100 사이의 숫자를 맞혀보세요!")
+# 사용자 입력 받기
+user_input = st.text_input("1부터 9까지 숫자 3개를 공백으로 구분해서 입력하세요 (예: 1 5 9)")
 
-# 사용자 입력
-guess = st.number_input("숫자를 입력하세요:", min_value=1, max_value=100, step=1)
+# 입력 파싱 함수
+def parse_input(text):
+    try:
+        nums = list(map(int, text.strip().split()))
+        if len(nums) != 3:
+            return None
+        if any(n < 1 or n > 9 for n in nums):
+            return None
+        if len(set(nums)) != 3:
+            return None
+        return nums
+    except:
+        return None
 
-if st.button("제출"):
-    st.session_state.attempts += 1
-    if guess < st.session_state.target:
-        st.info("너무 작아요! 더 큰 숫자를 시도해보세요.")
-    elif guess > st.session_state.target:
-        st.info("너무 커요! 더 작은 숫자를 시도해보세요.")
+if st.button("제출") and user_input and not st.session_state.guessed:
+    guess = parse_input(user_input)
+    if guess is None:
+        st.error("잘못된 입력입니다. 1부터 9까지 중복 없는 숫자 3개를 입력하세요.")
     else:
-        st.success(f"축하합니다! {st.session_state.attempts}번 만에 정답을 맞혔습니다 🎉")
-        if st.button("처음부터 다시하기"):
-            st.session_state.target = random.randint(1, 100)
-            st.session_state.attempts = 0
+        st.session_state.attempts += 1
+        target = st.session_state.target
+        # 스트라이크, 볼 계산
+        strike = sum([1 for i in range(3) if guess[i] == target[i]])
+        ball = len(set(guess) & set(target)) - strike
+        
+        # 기록 저장
+        st.session_state.history.append({"guess": guess, "strike": strike, "ball": ball})
+
+        st.write(f"스트라이크: {strike}  볼: {ball}")
+
+        if strike == 3:
+            st.success(f"축하합니다! {st.session_state.attempts}번 만에 맞히셨습니다! 🎉")
+            st.session_state.guessed = True
+        elif st.session_state.attempts >= st.session_state.max_attempts:
+            st.error(f"기회가 모두 소진되었습니다. 정답은 {target} 입니다.")
+            st.session_state.guessed = True
+
+# 입력 기록 출력
+if st.session_state.history:
+    st.subheader("지금까지 입력한 숫자와 결과")
+    for i, record in enumerate(st.session_state.history, 1):
+        st.write(f"{i}번째 시도: 숫자 {record['guess']} → 스트라이크: {record['strike']}, 볼: {record['ball']}")
+
+if st.session_state.guessed:
+    if st.button("다시 하기"):
+        st.session_state.target = random.sample(range(1, 10), 3)
+        st.session_state.attempts = 0
+        st.session_state.guessed = False
+        st.session_state.history = []
