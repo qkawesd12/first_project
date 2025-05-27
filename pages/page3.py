@@ -42,15 +42,12 @@ questions = [
     }
 ]
 
-# 세션 상태 초기화
 if 'current_q' not in st.session_state:
     st.session_state.current_q = 0
 if 'score' not in st.session_state:
     st.session_state.score = 0
 if 'answered' not in st.session_state:
     st.session_state.answered = False
-if 'user_answer' not in st.session_state:
-    st.session_state.user_answer = None
 
 q = questions[st.session_state.current_q]
 
@@ -59,20 +56,20 @@ st.subheader(q["question"])
 user_ans = None
 
 if q["type"] == "mcq":
-    # 객관식 문제
     user_ans = st.radio("정답을 선택하세요:", q["options"])
 elif q["type"] == "text":
     user_ans = st.text_input("정답을 입력하세요:")
 
 def normalize_answer(ans):
-    # 객관식 선택지에서 'a) ' 같은 접두어 제거
     if isinstance(ans, str):
         if ') ' in ans:
             return ans.split(') ')[0].strip().lower()
         return ans.strip().lower()
     return ans
 
-if st.button("제출") and not st.session_state.answered:
+submit_clicked = st.button("제출")
+
+if submit_clicked and not st.session_state.answered:
     if user_ans is None or (q["type"] == "text" and user_ans.strip() == ""):
         st.warning("답변을 입력하거나 선택해주세요.")
     else:
@@ -91,18 +88,22 @@ if st.button("제출") and not st.session_state.answered:
         st.write(f"해설: {q['explanation']}")
 
 if st.session_state.answered:
-    if st.session_state.current_q + 1 < len(questions):
-        if st.button("다음 문제"):
-            st.session_state.current_q += 1
-            st.session_state.answered = False
-            st.session_state.user_answer = None
-            st.experimental_rerun()
-            st.stop()  # rerun 이후 코드 중단
-    else:
-        st.info(f"모든 문제를 완료했습니다! 최종 점수: {st.session_state.score} / {len(questions)}")
-        if st.button("처음부터 다시하기"):
-            st.session_state.current_q = 0
-            st.session_state.score = 0
-            st.session_state.answered = False
-            st.experimental_rerun()
-            st.stop()  # rerun 이후 코드 중단
+    next_clicked = st.button("다음 문제")
+    restart_clicked = False
+    if st.session_state.current_q + 1 == len(questions):
+        restart_clicked = st.button("처음부터 다시하기")
+
+    if next_clicked and st.session_state.current_q + 1 < len(questions):
+        st.session_state.current_q += 1
+        st.session_state.answered = False
+        st.experimental_rerun()
+        st.stop()
+    elif restart_clicked:
+        st.session_state.current_q = 0
+        st.session_state.score = 0
+        st.session_state.answered = False
+        st.experimental_rerun()
+        st.stop()
+
+if st.session_state.current_q == len(questions):
+    st.info(f"모든 문제를 완료했습니다! 최종 점수: {st.session_state.score} / {len(questions)}")
