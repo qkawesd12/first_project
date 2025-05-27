@@ -6,7 +6,6 @@ st.write("""
 여러 유형의 문제를 풀면서 코딩 기초부터 실전 감각까지 키워보세요!
 """)
 
-# 문제 리스트: type='mcq'는 객관식, 'text'는 단답형
 questions = [
     {
         "question": "1. Python에서 리스트를 만드는 방법 중 올바른 것은?",
@@ -98,6 +97,7 @@ if st.session_state.answered:
             st.session_state.answered = False
             st.session_state.user_answer = None
             st.experimental_rerun()
+            st.stop()  # rerun 이후 코드 중단
     else:
         st.info(f"모든 문제를 완료했습니다! 최종 점수: {st.session_state.score} / {len(questions)}")
         if st.button("처음부터 다시하기"):
@@ -105,3 +105,4 @@ if st.session_state.answered:
             st.session_state.score = 0
             st.session_state.answered = False
             st.experimental_rerun()
+            st.stop()  # rerun 이후 코드 중단
