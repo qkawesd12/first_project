@@ -2,10 +2,6 @@ import streamlit as st
 
 st.title("🧑‍💻 심화 코딩 실력 테스트")
 
-st.write("""
-여러 유형의 문제를 풀면서 코딩 기초부터 실전 감각까지 키워보세요!
-""")
-
 questions = [
     {
         "question": "1. Python에서 리스트를 만드는 방법 중 올바른 것은?",
@@ -42,6 +38,7 @@ questions = [
     }
 ]
 
+# 초기화
 if 'current_q' not in st.session_state:
     st.session_state.current_q = 0
 if 'score' not in st.session_state:
@@ -88,22 +85,22 @@ if submit_clicked and not st.session_state.answered:
         st.write(f"해설: {q['explanation']}")
 
 if st.session_state.answered:
-    next_clicked = st.button("다음 문제")
-    restart_clicked = False
-    if st.session_state.current_q + 1 == len(questions):
+    # '다음 문제' 버튼과 '처음부터 다시하기' 버튼을 동시에 띄우지 않음
+    if st.session_state.current_q < len(questions) - 1:
+        next_clicked = st.button("다음 문제")
+        if next_clicked:
+            st.session_state.current_q += 1
+            st.session_state.answered = False
+            st.experimental_rerun()
+            st.stop()
+    else:
         restart_clicked = st.button("처음부터 다시하기")
-
-    if next_clicked and st.session_state.current_q + 1 < len(questions):
-        st.session_state.current_q += 1
-        st.session_state.answered = False
-        st.experimental_rerun()
-        st.stop()
-    elif restart_clicked:
-        st.session_state.current_q = 0
-        st.session_state.score = 0
-        st.session_state.answered = False
-        st.experimental_rerun()
-        st.stop()
+        if restart_clicked:
+            st.session_state.current_q = 0
+            st.session_state.score = 0
+            st.session_state.answered = False
+            st.experimental_rerun()
+            st.stop()
 
 if st.session_state.current_q == len(questions):
     st.info(f"모든 문제를 완료했습니다! 최종 점수: {st.session_state.score} / {len(questions)}")
