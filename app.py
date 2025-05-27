@@ -11,7 +11,7 @@ if 'target' not in st.session_state:
     st.session_state.attempts = 0
     st.session_state.max_attempts = 3
     st.session_state.guessed = False
-    st.session_state.history = []  # 입력 기록 저장
+    st.session_state.history = []
 
 # 사용자 입력 받기
 user_input = st.text_input("1부터 9까지 숫자 3개를 공백으로 구분해서 입력하세요 (예: 1 5 9)")
@@ -57,7 +57,10 @@ if st.button("제출") and user_input and not st.session_state.guessed:
 if st.session_state.history:
     st.subheader("지금까지 입력한 숫자와 결과")
     for i, record in enumerate(st.session_state.history, 1):
-        st.write(f"{i}번째 시도: 숫자 {record['guess']} → 스트라이크: {record['strike']}, 볼: {record['ball']}")
+        guess = record.get('guess', [])
+        strike = record.get('strike', 0)
+        ball = record.get('ball', 0)
+        st.write(f"{i}번째 시도: 숫자 {guess} → 스트라이크: {strike}, 볼: {ball}")
 
 if st.session_state.guessed:
     if st.button("다시 하기"):
