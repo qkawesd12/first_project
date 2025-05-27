@@ -29,3 +29,62 @@ selected_mbti = st.selectbox("당신의 MBTI 유형을 선택하세요:", list(m
 if selected_mbti:
     st.subheader(f"{selected_mbti} 유형 설명")
     st.write(mbti_descriptions[selected_mbti])
+
+import streamlit as st
+
+st.title("🔐 탈출 게임")
+
+# 게임 상태 초기화
+if 'stage' not in st.session_state:
+    st.session_state.stage = 1
+
+# 스테이지 1
+def stage1():
+    st.subheader("1단계: 방 안에서 깨어났다")
+    st.write("당신은 작은 방 안에 있습니다. 문은 잠겨 있고, 책상이 하나 보입니다.")
+    choice = st.radio("무엇을 할까요?", ["책상 조사하기", "문 열어보기", "창문 살펴보기"])
+    
+    if choice == "책상 조사하기":
+        st.write("책상 서랍 안에서 열쇠를 찾았습니다!")
+        st.session_state.stage = 2
+    elif choice == "문 열어보기":
+        st.write("문은 잠겨 있습니다. 다른 걸 찾아봐야겠어요.")
+    else:
+        st.write("창문은 너무 높아서 열 수 없습니다.")
+
+# 스테이지 2
+def stage2():
+    st.subheader("2단계: 잠긴 문")
+    st.write("열쇠를 들고 문 앞에 섰습니다. 열쇠로 문을 열까요?")
+    if st.button("열쇠로 문 열기"):
+        st.session_state.stage = 3
+    else:
+        st.write("아직 준비가 안 되셨나요?")
+
+# 스테이지 3
+def stage3():
+    st.subheader("3단계: 복도")
+    st.write("문을 열고 나가니 긴 복도가 있습니다. 왼쪽에는 계단, 오른쪽에는 또 다른 문이 있습니다.")
+    choice = st.radio("어디로 갈까요?", ["계단 내려가기", "오른쪽 문 들어가기"])
+    
+    if choice == "계단 내려가기":
+        st.write("계단 아래로 내려가 탈출에 성공했습니다! 🎉")
+        st.session_state.stage = 4
+    else:
+        st.write("문 안에는 아무것도 없네요. 돌아갑니다.")
+
+# 스테이지 4 (게임 클리어)
+def stage4():
+    st.success("축하합니다! 게임을 클리어했습니다.")
+    if st.button("처음부터 다시 하기"):
+        st.session_state.stage = 1
+
+# 게임 진행
+if st.session_state.stage == 1:
+    stage1()
+elif st.session_state.stage == 2:
+    stage2()
+elif st.session_state.stage == 3:
+    stage3()
+elif st.session_state.stage == 4:
+    stage4()
