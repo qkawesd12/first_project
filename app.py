@@ -1,6 +1,7 @@
 import streamlit as st
 
-# MBTI 설명 데이터\mbti_descriptions = {
+# MBTI 설명 데이터\
+mbti_descriptions = {
     "INTJ": "INTJ (전략가): 창의적이고 전략적인 사색가로, 항상 더 나은 방법을 찾고 문제를 해결하려 합니다.",
     "INTP": "INTP (논리술사): 혁신적이고 호기심 많은 사색가로, 논리와 분석을 통해 세상을 이해하려고 합니다.",
     "ENTJ": "ENTJ (지휘관): 대담하고 상상력이 풍부하며 의지가 강한 리더로, 어려운 목표도 달성하려 합니다.",
