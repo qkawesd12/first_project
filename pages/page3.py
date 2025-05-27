@@ -2,7 +2,7 @@ import streamlit as st
 import requests
 
 # NASA API 키 (데모키)
-API_KEY = st.secrets["DEMO_KEY"]
+API_KEY = st.secrets["NASA_API_KEY"]
 API_URL = f"https://api.nasa.gov/planetary/apod?api_key={API_KEY}"
 
 def get_apod():
