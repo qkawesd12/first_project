@@ -3,13 +3,13 @@ import random
 
 st.title("⚾ 간단한 야구 게임")
 
-st.write("컴퓨터가 1부터 9까지 숫자 3개를 랜덤으로 선택합니다. 당신은 3번 안에 숫자와 순서를 맞춰야 합니다.")
+st.write("컴퓨터가 1부터 9까지 숫자 3개를 랜덤으로 선택합니다. 당신은 10번 안에 숫자와 순서를 맞춰야 합니다.")
 
 # 상태 초기화
 if 'target' not in st.session_state:
     st.session_state.target = random.sample(range(1, 10), 3)
     st.session_state.attempts = 0
-    st.session_state.max_attempts = 3
+    st.session_state.max_attempts = 10  # 10번으로 변경
     st.session_state.guessed = False
     st.session_state.history = []
 
@@ -37,11 +37,8 @@ if st.button("제출") and user_input and not st.session_state.guessed:
     else:
         st.session_state.attempts += 1
         target = st.session_state.target
-        # 스트라이크, 볼 계산
         strike = sum([1 for i in range(3) if guess[i] == target[i]])
         ball = len(set(guess) & set(target)) - strike
-        
-        # 기록 저장
         st.session_state.history.append({"guess": guess, "strike": strike, "ball": ball})
 
         st.write(f"스트라이크: {strike}  볼: {ball}")
@@ -53,7 +50,6 @@ if st.button("제출") and user_input and not st.session_state.guessed:
             st.error(f"기회가 모두 소진되었습니다. 정답은 {target} 입니다.")
             st.session_state.guessed = True
 
-# 입력 기록 출력
 if st.session_state.history:
     st.subheader("지금까지 입력한 숫자와 결과")
     for i, record in enumerate(st.session_state.history, 1):
